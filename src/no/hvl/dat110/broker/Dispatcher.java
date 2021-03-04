@@ -112,8 +112,14 @@ public class Dispatcher extends Stopable {
 
 		// TODO: create the topic in the broker storage
 		// the topic is contained in the create topic message
-
-		throw new UnsupportedOperationException(TODO.method());
+		
+		try {
+			storage.createTopic(msg.getTopic());
+			
+		} catch(NullPointerException e) {
+			e.printStackTrace();
+			Logger.log("Error");
+		}
 
 	}
 
@@ -123,8 +129,13 @@ public class Dispatcher extends Stopable {
 
 		// TODO: delete the topic from the broker storage
 		// the topic is contained in the delete topic message
-		
-		throw new UnsupportedOperationException(TODO.method());
+		try {
+			storage.deleteTopic(msg.getDeletedTopic());
+		} catch(NullPointerException e) {
+			e.printStackTrace();
+			Logger.log("Error");
+		}
+	
 	}
 
 	public void onSubscribe(SubscribeMsg msg) {
@@ -134,7 +145,12 @@ public class Dispatcher extends Stopable {
 		// TODO: subscribe user to the topic
 		// user and topic is contained in the subscribe message
 		
-		throw new UnsupportedOperationException(TODO.method());
+		try {
+			storage.addSubscriber(msg.getUser(), msg.getSubscribe());
+		} catch(NullPointerException e) {
+			e.printStackTrace();
+			Logger.log("Error");
+		}
 
 	}
 
@@ -145,7 +161,12 @@ public class Dispatcher extends Stopable {
 		// TODO: unsubscribe user to the topic
 		// user and topic is contained in the unsubscribe message
 		
-		throw new UnsupportedOperationException(TODO.method());
+		try {
+			storage.removeSubscriber(msg.getUser(), msg.getUnsubscribe());
+		} catch(NullPointerException e) {
+			e.printStackTrace();
+			Logger.log("Error");
+		}
 	}
 
 	public void onPublish(PublishMsg msg) {
@@ -156,7 +177,11 @@ public class Dispatcher extends Stopable {
 		// topic and message is contained in the subscribe message
 		// messages must be sent used the corresponding client session objects
 		
-		throw new UnsupportedOperationException(TODO.method());
+		storage.getSubscribers(msg.getTopic())
+		.stream()
+		.filter(p -> storage.getSession(p) != null)
+		.forEach(p -> storage.getSession(p).send(msg));
+		
 
 	}
 }
